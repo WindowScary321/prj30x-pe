@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form method="POST" action="/notshow">
+            <table>
+                <tr>
+                    <td>
+                        Enter coach name: <input type="text" id="name" name="name">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Choose an position:
+                        <label>
+                            <input type="radio" name="option" value="GoalKeeper">
+                            GoalKeeper
+                        </label>
+                        <label>
+                            <input type="radio" name="option" value="Fitness">
+                            Fitness
+                        </label>
+                        <label>
+                            <input type="radio" name="option" value="Head">
+                            Head
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Enter year of experience: <input type="text" id="year" name="year">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" id="show" value="SHOW"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
