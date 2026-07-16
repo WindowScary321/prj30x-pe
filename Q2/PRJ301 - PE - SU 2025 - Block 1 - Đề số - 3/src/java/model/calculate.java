@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+package model;
 
-import entity.BmiRecord;
+import entity.Tdee;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,7 +15,11 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-public class bmiServlet extends HttpServlet {
+/**
+ *
+ * @author tusieumap
+ */
+public class calculate extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,10 +38,10 @@ public class bmiServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet bmiServlet</title>");
+            out.println("<title>Servlet calculate</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet bmiServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet calculate at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -69,45 +74,42 @@ public class bmiServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-
-        String heightStr = request.getParameter("height");
-        String weightStr = request.getParameter("weight");
+        
+        String coefficient = request.getParameter("coefficient");
+        String weight = request.getParameter("weight");
+        int result = 0; 
         String conclude = "";
-
-        request.setAttribute("height", heightStr);
-        request.setAttribute("weight", weightStr);
-
-        try {
-            int height = Integer.parseInt(heightStr);
-            int weight = Integer.parseInt(weightStr);
-
-            if (height < 10 || weight < 10) {
-                request.setAttribute("error", "Height/Weight must be an integer >=10");
+        
+        try{
+            int coef = Integer.parseInt(coefficient);
+            int wght = Integer.parseInt(weight);
+            
+            if (coef <= 10 || wght <= 10) {
+                request.setAttribute("error", "Coefficient/Weight must be an integer >=10");
             } else {
-                double heightM = height / 100.0;
-                double bmi = weight / (heightM * heightM);
-                if (bmi < 18.5) {
-                    conclude = "Underweight";
-                } else if (bmi < 25) {
-                    conclude = "Normal";
-                } else if (bmi < 30) {
-                    conclude = "Slightly overweight";
-                } else {
-                    conclude = "Obese";
+                result = coef * wght;
+                if (coef<29){
+                    conclude = "Sedentary";
+                }else if (coef >= 29 && coef < 33){
+                    conclude = "Light exercise";
+                }else if (coef >= 33 && coef < 37){
+                    conclude = "Moderate exercise";
+                }else {
+                    conclude = "Heavy exercise";
                 }
-
-                BmiRecord record = new BmiRecord(height, weight, bmi, conclude); // tạo đối tượng 
-                List<BmiRecord> list = (List<BmiRecord>) session.getAttribute("bmiRecords"); // thêm vào danh sách
-                if (list == null) {
+                
+                Tdee record = new Tdee(coef, wght, result, conclude);
+                List<Tdee> list = (List<Tdee>) session.getAttribute("records");
+                if (list == null){
                     list = new ArrayList<>();
                 }
                 list.add(record);
-                session.setAttribute("bmiRecords", list);
+                session.setAttribute("records", list);
             }
-        } catch (NumberFormatException e) {
+        }catch (NumberFormatException e){
             request.setAttribute("error", "Invalid input!");
         }
-
+        
         request.getRequestDispatcher("MyExam.jsp").forward(request, response);
     }
 
