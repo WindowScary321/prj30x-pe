@@ -9,10 +9,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.stream.IntStream;
 
-public class sum extends HttpServlet {
+/**
+ *
+ * @author tusieumap
+ */
+public class check extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -26,59 +28,15 @@ public class sum extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String input = request.getParameter("input");
-        String option = request.getParameter("option");
-        String result = "";
-
-        if (input == null || input.trim().isEmpty()) {
-            result = "input is empty";
-        } else {
-            String[] numberStrs = input.split(",");
-            int[] numbers = new int[numberStrs.length];
-
-            int index = 0;
-            boolean resultInt = true;
-            for (String numberStr : numberStrs) {
-                try {
-                    numbers[index] = Integer.parseInt(numberStr);
-                    index++;
-                } catch (NumberFormatException nfe) {
-                    resultInt = false;
-//                    break;
-                }
-            }
-            
-            int sumOdd = 0;
-            int sumEven = 0;
-            for (int num : numbers){
-                if (num%2==0){
-                    sumEven += num;
-                }else{
-                    sumOdd += num;
-                }
-            }
-            
-            if (resultInt) {
-                if("Even".equals(option)){
-                    result = String.valueOf(sumEven);
-                }else if("Odd".equals(option)){
-                    result = String.valueOf(sumOdd);
-                }
-            }else{
-                result = "You must input an integer array";
-            }
-
-        }
-
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet sum</title>");
+            out.println("<title>Servlet check</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<div id='txtResult'>" + result + "</div>");
+            out.println("<h1>Servlet check at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -110,7 +68,34 @@ public class sum extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String txtDay = request.getParameter("txtDay");
+        String txtMonth = request.getParameter("txtMonth");
+        String txtYear = request.getParameter("txtYear");
+        String btnFulldate = request.getParameter("btnFulldate");
+        String btnDaymonth = request.getParameter("btnDaymonth");
+
+        String result = "";
+
+        if (btnFulldate != null) {
+            if (txtDay.length() == 1) {
+                txtDay = "0" + txtDay;
+            }
+            if (txtMonth.length() == 1) {
+                txtMonth = "0" + txtMonth;
+            }
+            result = txtDay + "-" + txtMonth + "-" + txtYear;
+
+        } else if (btnDaymonth != null) {
+            if (txtDay.length() == 1) {
+                txtDay = "0" + txtDay;
+            }
+            if (txtMonth.length() == 1) {
+                txtMonth = "0" + txtMonth;
+            }
+            result = txtDay + "-" + txtMonth;
+        }
+        request.setAttribute("ketQua", result); // Trả kết quả từ servlet đến jsp
+        request.getRequestDispatcher("MyTest.jsp").forward(request, response);
     }
 
     /**

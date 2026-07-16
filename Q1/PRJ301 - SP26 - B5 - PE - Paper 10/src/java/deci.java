@@ -11,10 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.text.DecimalFormat;
 
-/**
- *
- * @author tusieumap
- */
 public class deci extends HttpServlet {
 
     /**
