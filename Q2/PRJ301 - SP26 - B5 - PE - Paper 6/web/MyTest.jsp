@@ -27,7 +27,7 @@
                         <td><input type="text" id="txtOutput" name="txtOutput" value="${ketQua}"></td> 
                     </tr>
                     <tr>
-                        <td>
+                        <td colspan="2">
                             <input type="submit" id="btnFulldate" name="btnFulldate" value="FULLDATE"/>
                             <input type="submit" id="btnDaymonth" name="btnDaymonth" value="DAYMONTH"/>
                         </td>
