@@ -2,20 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package model;
+package controller;
 
-import entity.Tdee;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import model.StringClass;
 
-public class calculate extends HttpServlet {
+@WebServlet("/check")
+public class maxword extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,10 +37,10 @@ public class calculate extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet calculate</title>");
+            out.println("<title>Servlet maxword</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet calculate at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet maxword at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -70,43 +73,55 @@ public class calculate extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        List<StringClass> stringRecords = (List<StringClass>) session.getAttribute("stringRecords");
+
+        String str = request.getParameter("str");
+        String action = request.getParameter("action");
+        String result = "";
+
+        request.setAttribute("str", str); // lưu thông tin của String đã nhập
         
-        String coefficient = request.getParameter("coefficient");
-        String weight = request.getParameter("weight");
-        int result = 0; 
-        String conclude = "";
-        
-        try{
-            int coef = Integer.parseInt(coefficient);
-            int wght = Integer.parseInt(weight);
-            
-            if (coef <= 10 || wght <= 10) {
-                request.setAttribute("error", "Coefficient/Weight must be an integer >=10");
-            } else {
-                result = coef * wght;
-                if (coef<29){
-                    conclude = "Sedentary";
-                }else if (coef >= 29 && coef < 33){
-                    conclude = "Light exercise";
-                }else if (coef >= 33 && coef < 37){
-                    conclude = "Moderate exercise";
-                }else {
-                    conclude = "Heavy exercise";
-                }
-                
-                Tdee record = new Tdee(coef, wght, result, conclude);
-                List<Tdee> list = (List<Tdee>) session.getAttribute("records");
-                if (list == null){
-                    list = new ArrayList<>();
-                }
-                list.add(record);
-                session.setAttribute("records", list);
-            }
-        }catch (NumberFormatException e){
-            request.setAttribute("error", "Invalid input!");
+        // khởi tạo list
+        if (stringRecords == null) {
+            stringRecords = new ArrayList<>();
+            session.setAttribute("stringRecords", stringRecords);
         }
-        
+
+        if (str == null || str.trim().isEmpty()) {
+            request.setAttribute("message", "You must input string str");
+            request.getRequestDispatcher("MyExam.jsp").forward(request, response);
+            return;
+        }
+
+        if ("maxword".equals(action)) {
+            result = findMaxWord(str);
+            request.setAttribute("result", result);
+            stringRecords.add(new StringClass(str, result)); // Thêm dòng mới vào bảng, ko ghi đè dòng cũ
+            session.setAttribute("stringRecords", stringRecords); // Cập nhật list vào session
+        } else if ("sort".equals(action)) {
+            stringRecords.sort((r1, r2) -> r1.getStr().compareToIgnoreCase(r2.getStr()));
+            session.setAttribute("stringRecords", stringRecords);
+        }
+
         request.getRequestDispatcher("MyExam.jsp").forward(request, response);
+    }
+
+    private String findMaxWord(String str) {
+        String[] words = str.trim().split("\\s+");
+
+        String max = words[0];
+        for (String word : words) {
+            if (word.length() > max.length()) {
+                max = word;
+            }
+        }
+        return max;
+    }
+
+    private String sortWords(String str) {
+        String[] words = str.trim().split("\\s+");
+        Arrays.sort(words, String.CASE_INSENSITIVE_ORDER);
+        return String.join(" ", words);
     }
 
     /**
